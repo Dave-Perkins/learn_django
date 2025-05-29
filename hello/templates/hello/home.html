@@ -20,6 +20,7 @@
                     <td>{{ message.log_date | date:'d M Y' }}</td>
                     <td>{{ message.log_date | time:'H:i:s' }}</td>
                     <td>
+                        <strong>{% if message.user %}{{ message.user.username }}:{% endif %}</strong>
                         {{ message.message }}
                         {% if message.image %}<br>
                             <img src="{{ message.image.url }}" alt="Message Image" style="max-width:400px; max-height:300px;">
@@ -33,6 +34,12 @@
                             <strong>Comments:</strong>
                             {% for comment in message.comments.all %}
                                 <div style="margin: 10px 0 10px 20px; padding: 5px; border-left: 2px solid #ccc;">
+                                    <em>
+                                        {% if comment.user %}
+                                            <!-- User #{{ comment.user.id }} ({{ comment.user.username }}): -->
+                                            {{ comment.user.username }}:
+                                        {% endif %}
+                                    </em>
                                     {% if comment.text %}<div>{{ comment.text }}</div>{% endif %}
                                     {% if comment.image %}
                                         <img src="{{ comment.image.url }}" alt="Comment Image" style="max-width:200px; max-height:150px;">

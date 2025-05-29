@@ -20,10 +20,13 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("", include("hello.urls")),
-    path('admin/', admin.site.urls)
+    path('admin/', admin.site.urls),
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='hello/login.html'), name='login'),
+path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

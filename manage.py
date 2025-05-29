@@ -19,6 +19,6 @@ def main():
 
 
 if __name__ == '__main__':
-    u = "http://127.0.0.1:8000/hello/VSCode"
-    print(f"navigate to: {u}")
+    # u = "http://127.0.0.1:8000/hello/VSCode"
+    # print(f"navigate to: {u}")
     main()
