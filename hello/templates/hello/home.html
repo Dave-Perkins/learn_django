@@ -26,6 +26,37 @@
                         {% endif %}
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="3">
+                        <!-- Comments Section -->
+                        <div class="comments">
+                            <strong>Comments:</strong>
+                            {% for comment in message.comments.all %}
+                                <div style="margin: 10px 0 10px 20px; padding: 5px; border-left: 2px solid #ccc;">
+                                    {% if comment.text %}<div>{{ comment.text }}</div>{% endif %}
+                                    {% if comment.image %}
+                                        <img src="{{ comment.image.url }}" alt="Comment Image" style="max-width:200px; max-height:150px;">
+                                    {% endif %}
+                                    <div style="font-size: 0.8em; color: #888;">{{ comment.created_at|date:'d M Y H:i' }}</div>
+                                </div>
+                            {% empty %}
+                                <div style="margin-left:20px; color:#888;">No comments yet.</div>
+                            {% endfor %}
+                            <!-- Add Comment Form -->
+                            <form method="post" enctype="multipart/form-data" action="{% url 'add_comment' message.id %}" style="margin-left:20px; margin-top:10px;">
+                                {% csrf_token %}
+                                {{ comment_form.text.label_tag }}
+                                <input type="text" name="text" id="id_text_{{ message.id }}"><br>
+                                {{ comment_form.image.label_tag }}
+                                <input type="file" name="image" id="id_image_{{ message.id }}"><br>
+                                {% if comment_form.non_field_errors %}
+                                    <div class="error">{{ comment_form.non_field_errors }}</div>
+                                {% endif %}
+                                <button type="submit">Add Comment</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
                 <tr><td colspan="3"><hr></td></tr>
             {% endfor %}
             </tbody>

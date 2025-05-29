@@ -14,7 +14,24 @@ class HomeListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeListView, self).get_context_data(**kwargs)
+        from .forms import CommentForm
+        context['comment_form'] = CommentForm()
         return context
+from .models import Comment
+
+from .forms import CommentForm
+
+from django.views.decorators.http import require_POST
+
+@require_POST
+def add_comment(request, post_id):
+    post = LogMessage.objects.get(pk=post_id)
+    form = CommentForm(request.POST, request.FILES)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.post = post
+        comment.save()
+    return redirect('home')
 
 def about(request):
     return render(request, "hello/about.html")

@@ -1,5 +1,11 @@
+from .models import Comment
 from django import forms
 from hello.models import LogMessage
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ("text", "image")
 
 class LogMessageForm(forms.ModelForm):
     class Meta:
