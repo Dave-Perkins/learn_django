@@ -35,7 +35,7 @@ def hello_there(request, name):
     )
 
 def log_message(request):
-    form = LogMessageForm(request.POST or None)
+    form = LogMessageForm(request.POST or None, request.FILES or None)
 
     if request.method == "POST":
         if form.is_valid():
@@ -43,5 +43,4 @@ def log_message(request):
             message.log_date = datetime.now()
             message.save()
             return redirect("home")
-    else:
-        return render(request, "hello/log_message.html", {"form": form})
+    return render(request, "hello/log_message.html", {"form": form})

@@ -21,8 +21,12 @@
                     <td>{{ message.log_date | time:'H:i:s' }}</td>
                     <td>
                         {{ message.message }}
+                        {% if message.image %}<br>
+                            <img src="{{ message.image.url }}" alt="Message Image" style="max-width:400px; max-height:300px;">
+                        {% endif %}
                     </td>
                 </tr>
+                <tr><td colspan="3"><hr></td></tr>
             {% endfor %}
             </tbody>
         </table>
