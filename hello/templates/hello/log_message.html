@@ -5,7 +5,6 @@
 {% block content %}
     <form method="POST" enctype="multipart/form-data" class="log-form">
         {% csrf_token %}
-        <label for="id_message">Message:</label><br>
         <textarea name="message" id="id_message" rows="4" cols="60">{{ form.message.value }}</textarea><br>
         {{ form.image.label_tag }} {{ form.image }}<br>
         <button type="submit" class="save btn btn-default">Log</button>
