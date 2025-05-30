@@ -22,42 +22,66 @@ from hello.models import LogMessage, Comment
 from django.db import models
 
 
-class HomeListView(ListView):
-    """Renders the home page, with a list of all messages."""
-    model = LogMessage
 
+# Function-based home view to handle GET and POST
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
+from django.contrib import messages
 
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            return LogMessage.objects.none()
-        if user.is_staff or user.is_superuser:
-            return LogMessage.objects.all().order_by('-log_date')
-        return LogMessage.objects.filter(user=user).order_by('-log_date')
+from django.core.paginator import Paginator
 
-    def get_context_data(self, **kwargs):
-        context = super(HomeListView, self).get_context_data(**kwargs)
-        context['comment_form'] = CommentForm()
-        user = self.request.user
-        # Filter comments for each message in message_list
-        filtered_comments = {}
-        if user.is_authenticated and (user.is_staff or user.is_superuser):
-            # Admins see all comments
-            for message in context['message_list']:
-                filtered_comments[message.id] = list(message.comments.all())
-        elif user.is_authenticated:
-            for message in context['message_list']:
-                # Only show comments left by the post owner or by admins
-                filtered_comments[message.id] = list(
-                    message.comments.filter(
-                        models.Q(user=message.user) | models.Q(user__is_staff=True) | models.Q(user__is_superuser=True)
-                    )
+from django.views.decorators.http import require_http_methods
+from django.template.response import TemplateResponse
+
+@require_http_methods(["GET", "POST"])
+def home(request):
+    # Handle new message POST
+    if request.method == "POST" and request.user.is_authenticated:
+        form = LogMessageForm(request.POST, request.FILES)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.log_date = datetime.now()
+            message.user = request.user
+            message.save()
+            return redirect('home')
+    else:
+        form = LogMessageForm()
+
+    # Get messages for this user (or all if admin)
+    user = request.user
+    if not user.is_authenticated:
+        message_list = LogMessage.objects.none()
+    elif user.is_staff or user.is_superuser:
+        message_list = LogMessage.objects.all().order_by('-log_date')
+    else:
+        message_list = LogMessage.objects.filter(user=user).order_by('-log_date')
+
+    # Filter comments for each message
+    filtered_comments = {}
+    if user.is_authenticated and (user.is_staff or user.is_superuser):
+        for message in message_list:
+            filtered_comments[message.id] = list(message.comments.all())
+    elif user.is_authenticated:
+        for message in message_list:
+            filtered_comments[message.id] = list(
+                message.comments.filter(
+                    Q(user=message.user) | Q(user__is_staff=True) | Q(user__is_superuser=True)
                 )
-        else:
-            for message in context.get('message_list', []):
-                filtered_comments[message.id] = []
-        context['filtered_comments'] = filtered_comments
-        return context
+            )
+    else:
+        for message in message_list:
+            filtered_comments[message.id] = []
+
+    context = {
+        'message_list': message_list,
+        'filtered_comments': filtered_comments,
+        'comment_form': CommentForm(),
+        'log_message_form': form,
+        'user': user,
+    }
+    return TemplateResponse(request, "hello/home.html", context)
 
 @require_POST
 @login_required

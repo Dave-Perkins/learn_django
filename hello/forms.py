@@ -6,6 +6,9 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ("text", "image")
+        labels = {
+            "text": "New Comment",
+        }
 
 class LogMessageForm(forms.ModelForm):
     class Meta:
