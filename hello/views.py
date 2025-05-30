@@ -19,15 +19,44 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from hello.forms import LogMessageForm, CommentForm
 from hello.models import LogMessage, Comment
+from django.db import models
 
 
 class HomeListView(ListView):
     """Renders the home page, with a list of all messages."""
     model = LogMessage
 
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            return LogMessage.objects.none()
+        if user.is_staff or user.is_superuser:
+            return LogMessage.objects.all().order_by('-log_date')
+        return LogMessage.objects.filter(user=user).order_by('-log_date')
+
     def get_context_data(self, **kwargs):
         context = super(HomeListView, self).get_context_data(**kwargs)
         context['comment_form'] = CommentForm()
+        user = self.request.user
+        # Filter comments for each message in message_list
+        filtered_comments = {}
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            # Admins see all comments
+            for message in context['message_list']:
+                filtered_comments[message.id] = list(message.comments.all())
+        elif user.is_authenticated:
+            for message in context['message_list']:
+                # Only show comments left by the post owner or by admins
+                filtered_comments[message.id] = list(
+                    message.comments.filter(
+                        models.Q(user=message.user) | models.Q(user__is_staff=True) | models.Q(user__is_superuser=True)
+                    )
+                )
+        else:
+            for message in context.get('message_list', []):
+                filtered_comments[message.id] = []
+        context['filtered_comments'] = filtered_comments
         return context
 
 @require_POST
