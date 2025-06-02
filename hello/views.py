@@ -87,11 +87,20 @@ def home(request):
 @login_required
 def add_comment(request, post_id):
     post = LogMessage.objects.get(pk=post_id)
-    form = CommentForm(request.POST, request.FILES)
+    # Determine which button was pressed
+    submit_image = 'submit_image' in request.POST
+    add_comment_btn = 'add_comment' in request.POST
+
+    # Only include image if submit_image was pressed, otherwise clear image from FILES
+    files = request.FILES if submit_image else None
+    form = CommentForm(request.POST, files)
     if form.is_valid():
         comment = form.save(commit=False)
         comment.post = post
         comment.user = request.user
+        # If only Add Comment was pressed, clear image
+        if add_comment_btn:
+            comment.image = None
         comment.save()
     return redirect('home')
 

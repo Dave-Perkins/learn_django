@@ -115,17 +115,19 @@ body {
     margin-top: 2px;
 }
 form.logout-form button.logout-btn {
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-    padding: 0.2em 0.8em !important;
-    height: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-}
-
-/* Extra specificity for Logout button font size */
-form.logout-form button.logout-btn {
     font-size: 0.75em !important;
+    font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif !important;
+    font-weight: 500 !important;
+    color: #cccccc !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 0 0 25px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
 }
 /* Larger font and button for log message form */
 .log-form label,
