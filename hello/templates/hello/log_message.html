@@ -6,7 +6,11 @@
     <form method="POST" enctype="multipart/form-data" class="log-form">
         {% csrf_token %}
         <textarea name="message" id="id_message" rows="4" cols="60">{{ form.message.value }}</textarea><br>
-        {{ form.image.label_tag }} {{ form.image }}<br>
-        <button type="submit" class="save btn btn-default">Log</button>
+        <label for="id_image" class="image-label">Image:</label>{{ form.image }}<br>
+        <span class="custom-file-input-wrapper">
+            {{ form.image }}
+            <span class="custom-file-input-label file-input-placeholder">No file chosen</span>
+        </span><br>
+        <button type="submit" class="save btn btn-default">Submit image</button>
     </form>
 {% endblock %}

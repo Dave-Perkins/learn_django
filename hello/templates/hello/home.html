@@ -5,12 +5,12 @@
 {% endblock %}
 {% block content %}
     {% if user.is_authenticated %}
-        <h2>Enter your new thoughts:</h2>
+        <h2>New thoughts:</h2>
         <form method="POST" enctype="multipart/form-data" action="" class="log-form">
             {% csrf_token %}
         <textarea name="message" id="id_message" rows="8" cols="60" class="large-textarea">{{ log_message_form.message.value|default_if_none:"" }}</textarea><br>
-            {{ log_message_form.image.label_tag }} {{ log_message_form.image }}<br>
-            <button type="submit" class="save btn btn-default">Log</button>
+            <!-- Image upload removed from message form -->
+            <button type="submit" class="save btn btn-default">Add Thoughts</button>
         </form>
     {% else %}
         <h2>Log in to post a message</h2>
@@ -24,7 +24,8 @@
         </form>
         <p>Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
     {% endif %}
-    <h2>Read your previous thoughts:</h2>
+    <hr style="border: 0; border-top: 6px solid #2d014d; margin: 32px 0; width: 100%;">
+    <h2>Previous thoughts:</h2>
     {% if message_list %}
         <table class="message_list">
             <!-- No column headers -->
@@ -65,14 +66,10 @@
                             <!-- Add Comment Form -->
                             <form method="post" enctype="multipart/form-data" action="{% url 'add_comment' message.id %}" style="margin-left:20px; margin-top:10px;">
                                 {% csrf_token %}
-                                {{ comment_form.text.label_tag }}<br>
+                                <span class="new-comment-label">New comment:</span><br>
                                 <textarea name="text" id="id_text_{{ message.id }}" rows="6" cols="50" class="large-textarea"></textarea><br>
-                                {{ comment_form.image.label_tag }}
-                                <input type="file" name="image" id="id_image_{{ message.id }}"><br>
-                                {% if comment_form.non_field_errors %}
-                                    <div class="error">{{ comment_form.non_field_errors }}</div>
-                                {% endif %}
-                                <button type="submit">Add Comment</button>
+                                <button type="submit" class="save btn btn-default">Submit image</button>
+                                <button type="submit" class="save btn btn-default">Add Comment</button>
                             </form>
                         </div>
                     </td>
