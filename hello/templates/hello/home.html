@@ -38,6 +38,11 @@
                         {% if message.image %}<br>
                             <img src="{{ message.image.url }}" alt="Message Image" style="max-width:400px; max-height:300px;">
                         {% endif %}
+                        {% if user.is_authenticated and message.user == user %}
+                            <form method="get" action="{% url 'edit_message' message.id %}" style="display:inline;">
+                                <button type="submit" class="save btn btn-default" style="margin-left: 16px;">Edit</button>
+                            </form>
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>

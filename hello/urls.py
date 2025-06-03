@@ -9,5 +9,6 @@ urlpatterns = [
     path("log/", views.log_message, name="log"),
     path("comment/<int:post_id>/add/", views.add_comment, name="add_comment"),
     path("register/", views.register, name="register"),
+    path("message/<int:message_id>/edit/", views.edit_message, name="edit_message"),
 ]
 

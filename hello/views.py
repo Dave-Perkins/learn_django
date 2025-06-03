@@ -1,3 +1,19 @@
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def edit_message(request, message_id):
+    try:
+        message = LogMessage.objects.get(pk=message_id, user=request.user)
+    except LogMessage.DoesNotExist:
+        return redirect('home')
+    if request.method == 'POST':
+        form = LogMessageForm(request.POST, request.FILES, instance=message)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = LogMessageForm(instance=message)
+    return render(request, 'hello/edit_message.html', {'form': form, 'message': message})
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login as auth_login
 def register(request):

@@ -1,0 +1,13 @@
+{% extends "hello/layout.html" %}
+{% block title %}Edit Message{% endblock %}
+{% block content %}
+    <h2>Edit your message</h2>
+    <form method="post" enctype="multipart/form-data" class="log-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <textarea name="message" id="id_message" rows="8" cols="60" class="large-textarea">{{ form.message.value|default_if_none:"" }}</textarea><br>
+        {{ form.image }}<br>
+        <button type="submit" class="save btn btn-default" style="margin-top: 10px;">Save Changes</button>
+        <a href="{% url 'home' %}" class="btn btn-default" style="margin-left: 16px;">Cancel</a>
+    </form>
+{% endblock %}
