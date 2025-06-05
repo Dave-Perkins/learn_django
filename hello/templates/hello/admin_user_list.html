@@ -1,0 +1,10 @@
+{% extends "hello/layout.html" %}
+{% block title %}User List{% endblock %}
+{% block content %}
+<h2>Registered Users</h2>
+<ul>
+  {% for u in users %}
+    <li><a href="{% url 'admin_user_detail' u.id %}">{{ u.username }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

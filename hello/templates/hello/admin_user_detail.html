@@ -1,0 +1,40 @@
+{% extends "hello/layout.html" %}
+{% load dict_extras %}
+{% block title %}User: {{ viewed_user.username }}{% endblock %}
+{% block content %}
+<h2>Posts by {{ viewed_user.username }}</h2>
+<ul>
+  {% for message in messages %}
+    <li style="margin-bottom: 30px;">
+      <strong>{{ message.log_date|date:'d M Y H:i' }}</strong>: {{ message.message|linebreaksbr }}
+      {% if message.image %}<br><img src="{{ message.image.url }}" alt="Message Image" style="max-width:300px; max-height:200px;">{% endif %}
+      <div style="margin-left: 20px; margin-top: 10px;">
+        <h4>Comments:</h4>
+        <ul>
+          {% for comment in comments_by_message|get_item:message.id %}
+            <li>
+              <strong>{{ comment.created_at|date:'d M Y H:i' }}</strong> by {% if comment.user %}{{ comment.user.username }}{% else %}Anonymous{% endif %}:<br>
+              {{ comment.text|linebreaksbr }}
+              {% if comment.image %}<br><img src="{{ comment.image.url }}" alt="Comment Image" style="max-width:200px; max-height:150px;">{% endif %}
+            </li>
+          {% empty %}
+            <li>No comments.</li>
+          {% endfor %}
+        </ul>
+        {% if not viewed_user.is_staff and not viewed_user.is_superuser %}
+        <!-- Admin comment form for non-admin messages -->
+        <form method="post" enctype="multipart/form-data" action="{% url 'add_comment' message.id %}" style="margin-top:10px;">
+          {% csrf_token %}
+          <span class="new-comment-label">New comment:</span><br>
+          <textarea name="text" id="id_text_{{ message.id }}" rows="6" cols="50" class="large-textarea"></textarea><br>
+          <button type="submit" name="add_comment" value="1" class="save btn btn-default">Add Comment</button>
+        </form>
+        {% endif %}
+      </div>
+    </li>
+  {% empty %}
+    <li>No posts.</li>
+  {% endfor %}
+</ul>
+<a href="{% url 'home' %}">Back to user list</a>
+{% endblock %}

@@ -13,13 +13,11 @@
     <a href="{% url 'home' %}" class="navbar-brand">Think Through:</a>
     {# <a href="{% url 'log' %}" class="navbar-item">Log Message</a> #}
     {% if user.is_authenticated %}
-        <span style="margin-left:20px;">Hello {{ user.username }}!</span>
+        <span style="margin-left:20px;">{{ user.username }}</span>
         <form action="{% url 'logout' %}" method="post" style="display:inline;" class="logout-form">
             {% csrf_token %}
             <button type="submit" class="logout-btn" style="background:none; border:none; color:#cccccc; cursor:pointer; padding:0; font-size:12px;">Logout</button>
         </form>
-    {% else %}
-        <a href="{% url 'login' %}" class="navbar-item">Login</a>
     {% endif %}
 
 </div>
@@ -29,7 +27,7 @@
     {% endblock %}
     <hr/>
     <footer>
-        <p>&copy; 2018</p>
+        <p>&copy; {% now 'Y' %}</p>
     </footer>
 </div>
 </body>

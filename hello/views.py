@@ -1,4 +1,6 @@
+
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 
 @login_required
 def edit_message(request, message_id):
@@ -54,32 +56,32 @@ from django.template.response import TemplateResponse
 @require_http_methods(["GET", "POST"])
 def home(request):
     # Handle new message POST
-    if request.method == "POST" and request.user.is_authenticated:
+    user = request.user
+    User = get_user_model()
+    # Admin view: show list of users
+    if user.is_authenticated and (user.is_staff or user.is_superuser):
+        users = User.objects.all().order_by('username')
+        return TemplateResponse(request, "hello/admin_user_list.html", {"users": users})
+
+    # Regular user view (existing logic)
+    if request.method == "POST" and user.is_authenticated:
         form = LogMessageForm(request.POST, request.FILES)
         if form.is_valid():
             message = form.save(commit=False)
             message.log_date = datetime.now()
-            message.user = request.user
+            message.user = user
             message.save()
             return redirect('home')
     else:
         form = LogMessageForm()
 
-    # Get messages for this user (or all if admin)
-    user = request.user
     if not user.is_authenticated:
         message_list = LogMessage.objects.none()
-    elif user.is_staff or user.is_superuser:
-        message_list = LogMessage.objects.all().order_by('-log_date')
     else:
         message_list = LogMessage.objects.filter(user=user).order_by('-log_date')
 
-    # Filter comments for each message
     filtered_comments = {}
-    if user.is_authenticated and (user.is_staff or user.is_superuser):
-        for message in message_list:
-            filtered_comments[message.id] = list(message.comments.all())
-    elif user.is_authenticated:
+    if user.is_authenticated:
         for message in message_list:
             filtered_comments[message.id] = list(
                 message.comments.filter(
@@ -99,8 +101,29 @@ def home(request):
     }
     return TemplateResponse(request, "hello/home.html", context)
 
-@require_POST
+# Admin: view a user's posts and comments
 @login_required
+def admin_user_detail(request, user_id):
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('home')
+    User = get_user_model()
+    user_obj = User.objects.get(pk=user_id)
+    messages = LogMessage.objects.filter(user=user_obj).order_by('-log_date')
+    # Gather comments for each message
+    comments_by_message = {}
+    for message in messages:
+        comments_by_message[message.id] = Comment.objects.filter(post=message).order_by('-created_at')
+    return TemplateResponse(request, "hello/admin_user_detail.html", {
+        "viewed_user": user_obj,
+        "messages": messages,
+        "comments_by_message": comments_by_message,
+        "comment_form": CommentForm(),
+        "user": request.user,
+    })
+
+
+@login_required
+@require_POST
 def add_comment(request, post_id):
     post = LogMessage.objects.get(pk=post_id)
     # Determine which button was pressed
@@ -118,7 +141,14 @@ def add_comment(request, post_id):
         if add_comment_btn:
             comment.image = None
         comment.save()
-    return redirect('home')
+
+    # Redirect logic: if admin, stay on user detail page; else, go home
+    if request.user.is_staff or request.user.is_superuser:
+        # Find the user whose post this is
+        user_id = post.user.id
+        return redirect('admin_user_detail', user_id=user_id)
+    else:
+        return redirect('home')
 
 def about(request):
     return render(request, "hello/about.html")
