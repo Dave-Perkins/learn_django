@@ -14,17 +14,17 @@ def edit_message(request, message_id):
     else:
         form = LogMessageForm(instance=message)
     return render(request, 'hello/edit_message.html', {'form': form, 'message': message})
-from django.contrib.auth.forms import UserCreationForm
+from hello.forms import CustomUserCreationForm
 from django.contrib.auth import login as auth_login
 def register(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
             return redirect('home')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, "hello/register.html", {"form": form})
 import re
 from django.utils.timezone import datetime
