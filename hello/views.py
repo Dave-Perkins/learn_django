@@ -12,6 +12,11 @@ def edit_message(request, message_id):
         form = LogMessageForm(request.POST, request.FILES, instance=message)
         if form.is_valid():
             form.save()
+            # Remove this message from alerted_messages so Ask Michelle can be used again
+            alerted = request.session.get('alerted_messages', [])
+            if message.id in alerted:
+                alerted.remove(message.id)
+                request.session['alerted_messages'] = alerted
             return redirect('home')
     else:
         form = LogMessageForm(instance=message)
