@@ -65,12 +65,47 @@ def home(request):
 
     # Regular user view (existing logic)
     if request.method == "POST" and user.is_authenticated:
+        # If the Ask Michelle button was pressed for a previous message (not the main form)
+        if 'alert_admin' in request.POST and 'message' in request.POST and not request.POST.get('id_message'):
+            # Find the message object by content and user (since only the user's own messages have the button)
+            message_text = request.POST.get('message', '').strip()
+            image_val = request.POST.get('image', '').strip()
+            # Find the most recent message with this content and user
+            message_obj = LogMessage.objects.filter(user=user, message=message_text).order_by('-log_date').first()
+            if message_obj:
+                from django.core.mail import mail_admins
+                mail_admins(
+                    subject="User requested admin attention",
+                    message=f"User {user.username} pressed the 'Ask Michelle' button.\nMessage content: {message_obj.message}"
+                )
+                # Track which message was alerted in the session
+                if 'alerted_messages' not in request.session:
+                    request.session['alerted_messages'] = []
+                alerted = request.session['alerted_messages']
+                if message_obj.id not in alerted:
+                    alerted.append(message_obj.id)
+                    request.session['alerted_messages'] = alerted
+            return redirect('home')
+        # Main form: log a new message (with or without Ask Michelle)
         form = LogMessageForm(request.POST, request.FILES)
         if form.is_valid():
-            message = form.save(commit=False)
-            message.log_date = datetime.now()
-            message.user = user
-            message.save()
+            message_obj = form.save(commit=False)
+            message_obj.log_date = datetime.now()
+            message_obj.user = user
+            message_obj.save()
+            # If the Ask Michelle button was pressed on the main form, also send an email and track
+            if 'alert_admin' in request.POST:
+                from django.core.mail import mail_admins
+                mail_admins(
+                    subject="User requested admin attention",
+                    message=f"User {user.username} pressed the 'Ask Michelle' button.\nMessage content: {message_obj.message}"
+                )
+                if 'alerted_messages' not in request.session:
+                    request.session['alerted_messages'] = []
+                alerted = request.session['alerted_messages']
+                if message_obj.id not in alerted:
+                    alerted.append(message_obj.id)
+                    request.session['alerted_messages'] = alerted
             return redirect('home')
     else:
         form = LogMessageForm()
@@ -92,12 +127,14 @@ def home(request):
         for message in message_list:
             filtered_comments[message.id] = []
 
+    alerted_messages = request.session.get('alerted_messages', [])
     context = {
         'message_list': message_list,
         'filtered_comments': filtered_comments,
         'comment_form': CommentForm(),
         'log_message_form': form,
         'user': user,
+        'alerted_messages': alerted_messages,
     }
     return TemplateResponse(request, "hello/home.html", context)
 

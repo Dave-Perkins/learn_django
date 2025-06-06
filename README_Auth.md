@@ -1,27 +1,30 @@
-# Future Task: Admin Alert on User Log Message
+# Task: Add 'Ask Michelle' Button for User Messages
 
 **Goal:**
-Alert the admin when a non-admin user logs a message.
+Allow users to alert the admin by email with a dedicated button, without replacing the existing "Add Thoughts" button.
 
-## Approaches
-1. **Send an email to admins** when a new message is logged by a non-admin user (recommended, using Django's mail system).
-2. Display an alert in the Django admin interface (less common, requires custom admin code).
-3. Log the event to a file or dashboard for admin review.
-
-## Implementation Plan (for email alert)
-- In the `log_message` view, after saving a new message, check if the user is not staff or superuser.
-- If so, use `mail_admins()` or `send_mail()` to notify the admins.
-- Configure `settings.ADMINS` and email backend in `settings.py` if not already set up.
+## Implementation Plan
+1. **Add a new button** to the message form (e.g., labeled "Ask Michelle") in the template, next to "Add Thoughts".
+2. **Update the view** (`home` or `log_message`) to detect when the "Ask Michelle" button is pressed (e.g., by checking the button's name in `request.POST`).
+3. When the button is pressed:
+    - Do not create a new message.
+    - Use Django's `mail_admins()` or `send_mail()` to send an email to the admin(s) with relevant context (e.g., user info, message content if present).
+4. **Configure email settings** in `settings.py` if not already set:
+    - Set `ADMINS` to include the admin's email, which is ananab.tilps@gmail.com
+    - Set up the email backend (e.g., SMTP or console backend for dev).
+5. **Keep the existing "Add Thoughts" button** and its logic unchanged.
+6. Display a success/failure message to the user after sending the alert.
 
 ## Example (for later):
 ```python
 from django.core.mail import mail_admins
-if not request.user.is_staff and not request.user.is_superuser:
+if 'alert_admin' in request.POST:
     mail_admins(
-        subject="New message logged by user",
-        message=f"User {request.user.username} logged a message: {message.message}"
+        subject="User requested admin attention",
+        message=f"User {request.user.username} pressed the alert button."
     )
 ```
 
 ---
-Return to this file when ready to implement admin alerts for user log messages.
+Return to this file when ready to implement the 'Ask Michelle' button feature.
+

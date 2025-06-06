@@ -1,3 +1,10 @@
+# Email settings for Ask Michelle button
+ADMINS = [
+    ("Michelle LaBarre", "ananab.tilps@gmail.com"),
+]
+
+# For development, use the console backend (prints emails to console)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 """
 Django settings for web_project project.
 
