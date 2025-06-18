@@ -1,0 +1,14 @@
+{% extends "hello/layout.html" %}
+{% block title %}Care{% endblock %}
+{% block content %}
+<h2>Care Message</h2>
+<form method="post" class="log-form">
+    {% csrf_token %}
+    <label for="id_message">Your message:</label><br>
+    <textarea name="message" id="id_message" rows="8" cols="60" class="large-textarea">{{ message|default_if_none:"" }}</textarea><br>
+    <button type="submit" class="save btn btn-default" style="margin-top: 10px;">Update</button>
+</form>
+{% if confirmation %}
+    <div style="margin-top: 16px; color: #2d014d; font-weight: bold;">Saved!</div>
+{% endif %}
+{% endblock %}

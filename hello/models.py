@@ -1,5 +1,16 @@
 
 from django.db import models
+
+
+class CareMessage(models.Model):
+    user = models.OneToOneField('hello.CustomUser', on_delete=models.CASCADE, related_name='care_message')
+    message = models.TextField(blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"CareMessage for {self.user.username if self.user else 'Unknown'}"
+
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 

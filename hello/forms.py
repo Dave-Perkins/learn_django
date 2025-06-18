@@ -1,3 +1,13 @@
+from django import forms
+from .models import CareMessage
+
+class CareMessageForm(forms.ModelForm):
+    class Meta:
+        model = CareMessage
+        fields = ['message']
+        widgets = {
+            'message': forms.Textarea(attrs={'rows': 8, 'cols': 60, 'class': 'large-textarea'}),
+        }
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model

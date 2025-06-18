@@ -9,18 +9,81 @@
 </head>
 
 <body>
-<div class="navbar">
-    <a href="{% url 'home' %}" class="navbar-brand">Think Through:</a>
-    {# <a href="{% url 'log' %}" class="navbar-item">Log Message</a> #}
-    {% if user.is_authenticated %}
-        <span style="margin-left:20px;">{{ user.username }}</span>
-        <form action="{% url 'logout' %}" method="post" style="display:inline;" class="logout-form">
-            {% csrf_token %}
-            <button type="submit" class="logout-btn" style="background:none; border:none; color:#cccccc; cursor:pointer; padding:0; font-size:12px;">Logout</button>
-        </form>
-    {% endif %}
 
+
+
+<div class="navbar">
+    {% if user.is_authenticated %}
+        <div class="tabs" style="display:inline-block;">
+            <a href="{% url 'home' %}" class="tab{% if request.resolver_match.url_name == 'home' %} active-tab{% endif %}">Journal</a>
+            <a href="{% url 'care' %}" class="tab{% if request.resolver_match.url_name == 'care' %} active-tab{% endif %}">Care</a>
+            <form action="{% url 'logout' %}" method="post" style="display:inline; margin:0; padding:0;">
+                {% csrf_token %}
+                <button type="submit" class="tab logout-tab" style="background:none; border:none; color:inherit; cursor:pointer; font:inherit; padding:8px 18px; margin-left:0;">Logout</button>
+            </form>
+        </div>
+    {% endif %}
 </div>
+
+<style>
+.tabs .tab {
+    display: inline-block;
+    padding: 8px 18px;
+    margin-right: 2px;
+    background: #f3f3f3;
+    color: #2d014d;
+    border-radius: 6px 6px 0 0;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    transition: background 0.2s;
+}
+.tabs .tab:hover, .tabs .tab.active-tab {
+    background: #e6e6fa;
+    color: #000;
+}
+.tabs .logout-tab {
+    color: #b22222;
+    background: #fbeaea;
+    border: 1px solid #f5c2c2;
+    border-bottom: none;
+}
+.tabs .logout-tab:hover {
+    background: #f8d7da;
+    color: #a00;
+}
+</style>
+
+<style>
+.tabs .tab {
+    display: inline-block;
+    padding: 8px 18px;
+    margin-right: 2px;
+    background: #f3f3f3;
+    color: #2d014d;
+    border-radius: 6px 6px 0 0;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    transition: background 0.2s;
+}
+.tabs .tab:hover, .tabs .tab.active-tab {
+    background: #e6e6fa;
+    color: #000;
+}
+.tabs .logout-tab {
+    color: #b22222;
+    background: #fbeaea;
+    border: 1px solid #f5c2c2;
+    border-bottom: none;
+}
+.tabs .logout-tab:hover {
+    background: #f8d7da;
+    color: #a00;
+}
+</style>
 
 <div class="body-content">
     {% block content %}

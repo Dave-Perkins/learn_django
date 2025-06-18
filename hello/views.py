@@ -1,3 +1,42 @@
+from django.contrib.auth.decorators import login_required
+from .models import CareMessage
+from .forms import CareMessageForm
+
+
+
+
+# REMOVE ALL DUPLICATE DEFINITIONS OF THE CARE VIEW
+
+
+# Remove all duplicate care view definitions
+
+@login_required
+def care(request):
+    user = request.user
+    confirmation = False
+    from django.db import IntegrityError
+    try:
+        care_message, _ = CareMessage.objects.get_or_create(user=user)
+    except IntegrityError:
+        # If there are multiple CareMessages for a user, clean up and use the first
+        CareMessage.objects.filter(user=user).exclude(pk=CareMessage.objects.filter(user=user).first().pk).delete()
+        care_message = CareMessage.objects.filter(user=user).first()
+    if request.method == 'POST':
+        new_message = request.POST.get('message', '')
+        care_message.message = new_message
+        care_message.save()
+        confirmation = True
+        # After saving, redirect to GET to avoid form resubmission and ensure the latest value is shown
+        return redirect('care')
+    return render(request, 'hello/care.html', {
+        'message': care_message.message,
+        'confirmation': confirmation
+    })
+from django.contrib.auth.decorators import login_required
+
+# ... (other imports and views)
+
+
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
