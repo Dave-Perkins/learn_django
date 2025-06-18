@@ -1,4 +1,22 @@
 from django.contrib.auth.decorators import login_required
+
+@login_required
+def care_user_dropdown(request):
+    # Only allow staff/superuser
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('care')
+    User = get_user_model()
+    users = User.objects.all().order_by('username')
+    return render(request, 'hello/care_user_dropdown.html', {'users': users})
+@login_required
+def care_user_dropdown(request):
+    # Only allow staff/superuser
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('care')
+    User = get_user_model()
+    users = User.objects.all().order_by('username')
+    return render(request, 'hello/care_user_dropdown.html', {'users': users})
+from django.contrib.auth.decorators import login_required
 from .models import CareMessage
 from .forms import CareMessageForm
 
@@ -10,27 +28,37 @@ from .forms import CareMessageForm
 
 # Remove all duplicate care view definitions
 
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+
 @login_required
-def care(request):
-    user = request.user
+def care(request, user_id=None):
+    User = get_user_model()
+    # If admin and user_id is provided, allow editing that user's care message
+    if user_id and (request.user.is_staff or request.user.is_superuser):
+        target_user = get_object_or_404(User, pk=user_id)
+    else:
+        target_user = request.user
     confirmation = False
     from django.db import IntegrityError
     try:
-        care_message, _ = CareMessage.objects.get_or_create(user=user)
+        care_message, _ = CareMessage.objects.get_or_create(user=target_user)
     except IntegrityError:
-        # If there are multiple CareMessages for a user, clean up and use the first
-        CareMessage.objects.filter(user=user).exclude(pk=CareMessage.objects.filter(user=user).first().pk).delete()
-        care_message = CareMessage.objects.filter(user=user).first()
+        CareMessage.objects.filter(user=target_user).exclude(pk=CareMessage.objects.filter(user=target_user).first().pk).delete()
+        care_message = CareMessage.objects.filter(user=target_user).first()
     if request.method == 'POST':
         new_message = request.POST.get('message', '')
         care_message.message = new_message
         care_message.save()
         confirmation = True
         # After saving, redirect to GET to avoid form resubmission and ensure the latest value is shown
+        if user_id and (request.user.is_staff or request.user.is_superuser):
+            return redirect('care_with_user', user_id=user_id)
         return redirect('care')
     return render(request, 'hello/care.html', {
         'message': care_message.message,
-        'confirmation': confirmation
+        'confirmation': confirmation,
+        'target_user': target_user if (request.user.is_staff or request.user.is_superuser) else None,
     })
 from django.contrib.auth.decorators import login_required
 

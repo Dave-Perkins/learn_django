@@ -1,7 +1,7 @@
 {% extends "hello/layout.html" %}
 {% block title %}Care{% endblock %}
 {% block content %}
-<h2>Care Message</h2>
+<h2>Care Message{% if target_user %} for {{ target_user.username }}{% endif %}</h2>
 <form method="post" class="log-form">
     {% csrf_token %}
     <label for="id_message">Your message:</label><br>

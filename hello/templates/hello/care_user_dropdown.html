@@ -1,0 +1,13 @@
+{% extends "hello/layout.html" %}
+{% block title %}Care Documents{% endblock %}
+{% block content %}
+<h2>Select a User to Edit Care Document</h2>
+<form method="get" action="">
+    <select id="user_select" name="user_id" onchange="if(this.value) window.location.href='/care/' + this.value + '/';">
+        <option value="">-- Select User --</option>
+        {% for u in users %}
+            <option value="{{ u.id }}">{{ u.username }}</option>
+        {% endfor %}
+    </select>
+</form>
+{% endblock %}

@@ -17,6 +17,9 @@
         <div class="tabs" style="display:inline-block;">
             <a href="{% url 'home' %}" class="tab{% if request.resolver_match.url_name == 'home' %} active-tab{% endif %}">Journal</a>
             <a href="{% url 'care' %}" class="tab{% if request.resolver_match.url_name == 'care' %} active-tab{% endif %}">Care</a>
+            {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'care_user_dropdown' %}" class="tab{% if request.resolver_match.url_name == 'care_user_dropdown' %} active-tab{% endif %}">Care Docs (Admin)</a>
+            {% endif %}
             <form action="{% url 'logout' %}" method="post" style="display:inline; margin:0; padding:0;">
                 {% csrf_token %}
                 <button type="submit" class="tab logout-tab" style="background:none; border:none; color:inherit; cursor:pointer; font:inherit; padding:8px 18px; margin-left:0;">Logout</button>
