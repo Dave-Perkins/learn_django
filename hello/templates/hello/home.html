@@ -10,7 +10,7 @@
             <textarea name="message" id="id_message" rows="8" cols="60" class="large-textarea">{{ log_message_form.message.value|default_if_none:"" }}</textarea><br>
             {{ log_message_form.image }}<br>
             <button type="submit" class="save btn btn-default" style="margin-top: 10px;">Add Thoughts</button>
-            <button type="submit" name="alert_admin" value="1" class="save btn btn-default" style="margin-top: 10px; margin-left: 10px; background: #e67e22;">Ask Michelle</button>
+
         </form>
     <hr style="border: 0; border-top: 6px solid #2d014d; margin: 32px 0; width: 100%;">
         {% if message_list %}
