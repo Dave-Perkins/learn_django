@@ -160,10 +160,18 @@ def home(request):
             return redirect('home')
         # Main form: log a new message (with or without Ask Michelle)
         form = LogMessageForm(request.POST, request.FILES)
-        if form.is_valid():
+        # Accept if either message or image is present
+        has_message = form.data.get('message', '').strip() != ''
+        has_image = 'image' in request.FILES and request.FILES['image']
+        print(f"[DEBUG] POST received. has_message={has_message}, has_image={has_image}, files={request.FILES}")
+        if form.is_valid() and (has_message or has_image):
             message_obj = form.save(commit=False)
             message_obj.log_date = datetime.now()
             message_obj.user = user
+            # Ensure image is set if present in FILES
+            if 'image' in request.FILES:
+                message_obj.image = request.FILES['image']
+            print(f"[DEBUG] Saving message: text='{message_obj.message}', image='{message_obj.image}', files={request.FILES}")
             message_obj.save()
             # If the Ask Michelle button was pressed on the main form, also send an email and track
             if 'alert_admin' in request.POST:
@@ -179,6 +187,8 @@ def home(request):
                     alerted.append(message_obj.id)
                     request.session['alerted_messages'] = alerted
             return redirect('home')
+        elif not form.is_valid():
+            print(f"[DEBUG] Form errors: {form.errors}")
     else:
         form = LogMessageForm()
 

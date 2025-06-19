@@ -68,3 +68,6 @@ class LogMessageForm(forms.ModelForm):
                 "style": "font-size:1.33em; padding:0.51em 1.275em; border-radius:6px; height:auto; min-width:0; max-width:none;",
             }),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['message'].required = False

@@ -22,7 +22,7 @@ from django.utils import timezone
 
 class LogMessage(models.Model):
     user = models.ForeignKey('hello.CustomUser', on_delete=models.CASCADE, related_name='log_messages', null=True, blank=True)
-    message = models.TextField()
+    message = models.TextField(blank=True)
     log_date = models.DateTimeField("date logged")
     image = models.ImageField(upload_to="message_images/", blank=True, null=True)
 
