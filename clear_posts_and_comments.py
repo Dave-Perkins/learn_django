@@ -1,8 +1,11 @@
-# Script to delete all posts and comments from the database
-from hello.models import LogMessage, Comment
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_project.settings')
 
-# Delete all comments first (to avoid FK issues), then all posts
-Comment.objects.all().delete()
+import django
+django.setup()
+
+from hello.models import LogMessage, CareMessage
+
 LogMessage.objects.all().delete()
-
-print("All posts and comments have been deleted.")
+CareMessage.objects.all().delete()
+print("All messages and comments deleted.")

@@ -6,10 +6,11 @@
     <form method="POST" enctype="multipart/form-data" class="log-form">
         {% csrf_token %}
         <textarea name="message" id="id_message" rows="4" cols="60">{{ form.message.value }}</textarea><br>
-        <label for="id_image" class="image-label">Image:</label>{{ form.image }}<br>
+        <label for="id_image" class="image-label">Image:</label>
         <span class="custom-file-input-wrapper">
-            {{ form.image }}
-            <span class="custom-file-input-label file-input-placeholder">No file chosen</span>
+            <input id="id_image" name="image" type="file" accept="image/*" style="display:none;" onchange="document.getElementById('file-name-label').textContent = this.files.length ? this.files[0].name : 'No file chosen';">
+            <label for="id_image" class="save btn btn-default" style="margin-right:1em; cursor:pointer;">Select Image</label>
+            <span id="file-name-label" class="custom-file-input-label file-input-placeholder">No file chosen</span>
         </span><br>
         <button type="submit" class="save btn btn-default">Submit image</button>
     </form>

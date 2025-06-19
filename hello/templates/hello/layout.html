@@ -16,9 +16,11 @@
     {% if user.is_authenticated %}
         <div class="tabs" style="display:inline-block;">
             <a href="{% url 'home' %}" class="tab{% if request.resolver_match.url_name == 'home' %} active-tab{% endif %}">Journal</a>
-            <a href="{% url 'care' %}" class="tab{% if request.resolver_match.url_name == 'care' %} active-tab{% endif %}">Care</a>
+            {% if not user.is_staff and not user.is_superuser %}
+                <a href="{% url 'care' %}" class="tab{% if request.resolver_match.url_name == 'care' %} active-tab{% endif %}">Care</a>
+            {% endif %}
             {% if user.is_staff or user.is_superuser %}
-                <a href="{% url 'care_user_dropdown' %}" class="tab{% if request.resolver_match.url_name == 'care_user_dropdown' %} active-tab{% endif %}">Care Docs (Admin)</a>
+                <a href="{% url 'care_user_dropdown' %}" class="tab{% if request.resolver_match.url_name == 'care_user_dropdown' %} active-tab{% endif %}">Care</a>
             {% endif %}
             <form action="{% url 'logout' %}" method="post" style="display:inline; margin:0; padding:0;">
                 {% csrf_token %}

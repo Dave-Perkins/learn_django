@@ -2,11 +2,10 @@
 {% block title %}Care Documents{% endblock %}
 {% block content %}
 <h2>Select a User to Edit Care Document</h2>
-<ul class="care-user-list" style="font-size:16px; line-height:1.5;">
+<ul class="care-user-list" style="font-size:24px; line-height:1.5;">
     {% for u in users %}
-        <li style="font-size:16px !important;">
-            <a href="/care/{{ u.id }}/" style="font-size:16px !important; line-height:1.5 !important; color: #2d014d !important;">{{ u.username }}</a>
-            <span style="font-size:16px; color:#888;">(16px test)</span>
+        <li style="font-size:24px !important;">
+            <a href="/care/{{ u.id }}/" style="font-size:24px !important; line-height:1.5 !important; color: #2d014d !important;">{{ u.username }}</a>
         </li>
     {% endfor %}
 </ul>
