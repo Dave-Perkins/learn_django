@@ -2,7 +2,7 @@
 {% block title %}User List{% endblock %}
 {% block content %}
 <h2>Registered Users</h2>
-<ul>
+<ul class="admin-user-list" style="font-size: 24px !important; color: #222;"> <!-- 24px font-size for user list -->
   {% for u in users %}
     <li><a href="{% url 'admin_user_detail' u.id %}">{{ u.username }}</a></li>
   {% endfor %}

@@ -2,12 +2,12 @@
 {% block title %}Care Documents{% endblock %}
 {% block content %}
 <h2>Select a User to Edit Care Document</h2>
-<form method="get" action="">
-    <select id="user_select" name="user_id" onchange="if(this.value) window.location.href='/care/' + this.value + '/';">
-        <option value="">-- Select User --</option>
-        {% for u in users %}
-            <option value="{{ u.id }}">{{ u.username }}</option>
-        {% endfor %}
-    </select>
-</form>
+<ul class="care-user-list" style="font-size:16px; line-height:1.5;">
+    {% for u in users %}
+        <li style="font-size:16px !important;">
+            <a href="/care/{{ u.id }}/" style="font-size:16px !important; line-height:1.5 !important; color: #2d014d !important;">{{ u.username }}</a>
+            <span style="font-size:16px; color:#888;">(16px test)</span>
+        </li>
+    {% endfor %}
+</ul>
 {% endblock %}

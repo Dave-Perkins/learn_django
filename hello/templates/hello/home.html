@@ -21,7 +21,7 @@
                 <tr>
                     <td colspan="2">
                         <div class="post-date comment-date">{{ message.log_date | date:'d M Y' }}</div>
-                        <strong class="logged-message-user">{% if message.user %}{{ message.user.username }}:{% endif %}</strong>
+                        <strong class="logged-message-user">{% if message.user %}{% if message.user.is_staff or message.user.is_superuser %}Michelle{% else %}{{ message.user.username }}{% endif %}:{% endif %}</strong>
                         <span class="logged-message">{{ message.message|linebreaksbr }}</span>
                         {% if message.image %}<br>
                             <img src="{{ message.image.url }}" alt="Message Image" style="max-width:400px; max-height:300px;">
@@ -51,8 +51,7 @@
                                 <div style="margin: 10px 0 10px 20px; padding: 5px; border-left: 2px solid #ccc;">
                                     <em class="comment-user">
                                         {% if comment.user %}
-                                            <!-- User #{{ comment.user.id }} ({{ comment.user.username }}): -->
-                                            {{ comment.user.username }}:
+                                            {% if comment.user.is_staff or comment.user.is_superuser %}Michelle{% else %}{{ comment.user.username }}{% endif %}:
                                         {% endif %}
                                     </em>
                                     {% if comment.text %}<div class="comment-text">{{ comment.text }}</div>{% endif %}

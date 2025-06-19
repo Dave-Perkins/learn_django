@@ -13,7 +13,7 @@
         <ul>
           {% for comment in comments_by_message|get_item:message.id %}
             <li>
-              <strong>{{ comment.created_at|date:'d M Y H:i' }}</strong> by {% if comment.user %}{{ comment.user.username }}{% else %}Anonymous{% endif %}:<br>
+              <strong>{{ comment.created_at|date:'d M Y H:i' }}</strong> by {% if comment.user %}{% if comment.user.is_staff or comment.user.is_superuser %}Michelle{% else %}{{ comment.user.username }}{% endif %}{% else %}Anonymous{% endif %}:<br>
               {{ comment.text|linebreaksbr }}
               {% if comment.image %}<br><img src="{{ comment.image.url }}" alt="Comment Image" style="max-width:200px; max-height:150px;">{% endif %}
             </li>

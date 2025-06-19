@@ -1,4 +1,273 @@
+/* Custom file input wrapper to style 'No file chosen' text */
+.custom-file-input-wrapper {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+}
+.custom-file-input-wrapper input[type="file"] {
+    position: relative;
+    z-index: 2;
+    /* opacity: 0; */
+    width: 180px;
+    height: 2.2em;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+.custom-file-input-label {
+    position: static;
+    margin-left: 0.75em;
+    font-size: 1.2em;
+    color: #888;
+    font-family: inherit;
+    background: transparent;
+    white-space: nowrap;
+    pointer-events: none;
+}
+/* Style for 'No file chosen' text to match date style */
+.file-input-placeholder {
+    font-size: 1.2em;
+    color: #888;
+    font-family: inherit;
+    margin-top: 2px;
+}
+/* Consistent style for all image upload field labels */
+.image-label {
+    font-size: 1.33em;
+    font-weight: 600;
+    font-family: inherit;
+    margin-right: 0.15em;
+    color: #2d014d;
+    display: inline;
+    vertical-align: middle;
+    padding-right: 0;
+    letter-spacing: 0;
+}
+/* Universal file input style for all forms */
+input[type="file"] {
+    font-size: 1.33em !important;
+    padding: 0.51em 1.1em 0.51em 0.1em !important;
+    border-radius: 6px !important;
+    height: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    font-family: inherit !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Universal button style for all buttons, regardless of text */
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.save,
+.comment-form,
+.logout-btn,
+.btn,
+.navbar-item {
+    font-size: 1.13em !important;
+    font-family: inherit !important;
+    padding: 0.51em 1.275em !important;
+    border-radius: 6px !important;
+    margin-top: 16px !important;
+    background: #2d014d !important;
+    color: #fff !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    transition: background 0.2s;
+}
+
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+.save:hover,
+.comment-form:hover,
+.logout-btn:hover,
+.btn:hover,
+.navbar-item:hover {
+    background: #4b1a7f !important;
+}
+.new-comment-label {
+    font-size: 1.5em;
+    font-weight: 700;
+    font-family: inherit;
+}
+body {
+    background: #e6e6fa;
+}
+/* Larger font for comment user, text, and date */
+.comment-user {
+    font-size: 1.5em;
+    font-family: inherit;
+    font-weight: 700;
+}
+.comment-text {
+    font-size: 1.5em;
+    font-family: inherit;
+}
+.comment-date {
+    font-size: 1.2em;
+    color: #888;
+    font-family: inherit;
+    margin-top: 2px;
+}
+form.logout-form button.logout-btn {
+    font-size: 0.75em !important;
+    font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif !important;
+    font-weight: 500 !important;
+    color: #cccccc !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 0 0 25px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+/* Larger font and button for log message form */
+.log-form label,
+.log-form input[type="file"],
+.log-form button,
+.log-form .save {
+    font-size: 1.33em;
+}
+
+.log-form button,
+.log-form .save {
+    padding: 0.51em 1.275em;
+    border-radius: 6px;
+    font-size: 1.13em;
+    margin-top: 16px;
+}
+
+/* Reduce Logout button font size by 50% */
+.navbar form button.navbar-item {
+    font-size: 0.75em !important;
+}
+/* Large font for table headers and username */
+.large-header {
+    font-size: 1.5em;
+    font-family: inherit;
+    font-weight: 700;
+}
+
+.logged-message-user {
+    font-size: 1.5em;
+    font-family: inherit;
+    font-weight: 700;
+}
+
+/* Add space between Date and Message columns */
+.message_list th, .message_list td {
+    text-align: left;
+    padding-right: 40px;
+    vertical-align: top;
+}
+/* Larger textarea for message and comment input */
+
+.large-textarea {
+    font-size: 1.5em;
+    font-family: inherit;
+    line-height: 1.3;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 3px solid #888;
+    border-radius: 4px;
+}
+
+.logged-message {
+    font-size: 1.5em;
+}
+
+.navbar, .navbar a, .navbar span, .navbar .navbar-item, .navbar form, .navbar form button.navbar-item {
+    font-size: 1.5em !important;
+    font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+}
+
+.logged-message {
+    font-size: 1.5em;
+}
 .message {
     font-weight: 600;
     color: green;
+}
+
+
+
+.navbar {
+    background-color: #2d014d;
+    color: white;
+    padding: 10px 10px 10px 10px;
+    display: flex;
+    align-items: center;
+    font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+    font-size: 36px;
+}
+
+
+.navbar a, .navbar span {
+    text-decoration: none;
+    color: inherit;
+    font-size: 36px;
+    font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+    font-weight: 500;
+    margin-left: 25px;
+    margin-right: 0;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+
+
+.navbar form {
+    display: inline;
+    margin-left: 80px;
+}
+
+.navbar form button.navbar-item {
+    font-size: 24px;
+    font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+    font-weight: 500;
+    margin-left: 25px;
+    margin-right: 0;
+    letter-spacing: 0.5px;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+
+.navbar a.navbar-brand {
+    font-size: 36px;
+    font-weight: 700;
+    margin-left: 0;
+}
+
+.navbar-item {
+    font-variant: normal;
+    margin-left: 25px;
+    font-size: 36px;
+    font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+    font-weight: 500;
+}
+
+.body-content {
+    padding: 5px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+input[name=message] {
+    width: 80%;
+}
+
+.message_list th,td {
+    text-align: left;
+    padding-right: 15px;
 }
