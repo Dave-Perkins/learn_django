@@ -8,4 +8,4 @@ from hello.models import LogMessage, CareMessage
 
 LogMessage.objects.all().delete()
 CareMessage.objects.all().delete()
-print("All messages and comments deleted.")
+print("All messages and comments deleted.")http://167.99.5.7/static/hello/test123.css
