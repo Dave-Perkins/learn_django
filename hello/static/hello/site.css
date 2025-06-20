@@ -1,4 +1,30 @@
+/* Adding a comment as a check
+
 /* Custom file input wrapper to style 'No file chosen' text */
+
+/* Care Docs (Admin) user list font size */
+.care-user-list,
+.care-user-list li,
+.care-user-list a {
+    font-size: 24px !important;
+    font-family: inherit !important;
+    line-height: 1.5 !important;
+}
+
+/* Registered Users list font size */
+.admin-user-list,
+.admin-user-list li,
+.admin-user-list a {
+    font-size: 24px !important;
+    font-family: inherit;
+}
+
+/* --- Consistent Font Sizes --- */
+body, html {
+    font-size: 16px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
+}
+
 .custom-file-input-wrapper {
     display: inline-flex;
     align-items: center;
