@@ -2,25 +2,56 @@
 {% load dict_extras %}
 {% block title %}User: {{ viewed_user.username }}{% endblock %}
 {% block content %}
-<h2>Posts by {{ viewed_user.username }}</h2>
+<style>
+.comment-user {
+    font-size: 24px !important;
+    font-family: inherit;
+    font-weight: 700;
+}
+.comment-text {
+    font-size: 24px !important;
+    font-family: inherit;
+}
+ul li .comment-user,
+ul li .comment-text {
+        font-size: 24px !important;
+        font-family: inherit;
+        font-weight: 700;
+    }
+    /* Force comment font size in admin user detail page */
+    .admin-user-comments .comment-user,
+    .admin-user-comments .comment-text {
+        font-size: 24px !important;
+        font-family: inherit;
+        font-weight: 700;
+    }
+    /* Force comment font size in Django admin user detail view */
+    .object-comments .field-comment-user,
+    .object-comments .field-comment-text {
+        font-size: 24px !important;
+        font-family: inherit;
+        font-weight: 700;
+    }
+</style>
+<h2>Posts about {{ viewed_user.username }}</h2>
 <ul>
   {% for message in messages %}
     <li style="margin-bottom: 30px;">
-      <strong>{{ message.log_date|date:'d M Y H:i' }}</strong>: {{ message.message|linebreaksbr }}
+      <strong>{{ message.log_date|date:'d M Y' }}</strong>: {{ message.message|linebreaksbr }}
       {% if message.image %}<br><img src="{{ message.image.url }}" alt="Message Image" style="max-width:300px; max-height:200px;">{% endif %}
       <div style="margin-left: 20px; margin-top: 10px;">
+        {% if comments_by_message|get_item:message.id %}
         <h4>Comments:</h4>
         <ul>
           {% for comment in comments_by_message|get_item:message.id %}
             <li>
-              <strong>{{ comment.created_at|date:'d M Y H:i' }}</strong> by {% if comment.user %}{% if comment.user.is_staff or comment.user.is_superuser %}Michelle{% else %}{{ comment.user.username }}{% endif %}{% else %}Anonymous{% endif %}:<br>
+              <strong>{{ comment.created_at|date:'d M Y' }}</strong> by {% if comment.user %}{% if comment.user.is_staff or comment.user.is_superuser %}Michelle{% else %}{{ comment.user.username }}{% endif %}{% else %}Anonymous{% endif %}:<br>
               {{ comment.text|linebreaksbr }}
               {% if comment.image %}<br><img src="{{ comment.image.url }}" alt="Comment Image" style="max-width:200px; max-height:150px;">{% endif %}
             </li>
-          {% empty %}
-            <li>No comments.</li>
           {% endfor %}
         </ul>
+        {% endif %}
         {% if not viewed_user.is_staff and not viewed_user.is_superuser %}
         <!-- Admin comment form for non-admin messages -->
         <form method="post" enctype="multipart/form-data" action="{% url 'add_comment' message.id %}" style="margin-top:10px;">

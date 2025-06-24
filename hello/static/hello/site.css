@@ -100,12 +100,12 @@ body {
 }
 /* Larger font for comment user, text, and date */
 .comment-user {
-    font-size: 1.5em;
+    font-size: 24px;
     font-family: inherit;
     font-weight: 700;
 }
 .comment-text {
-    font-size: 1.5em;
+    font-size: 24px;
     font-family: inherit;
 }
 .comment-date {
@@ -181,7 +181,7 @@ form.logout-form button.logout-btn {
 }
 
 .logged-message {
-    font-size: 1.5em;
+    font-size: 24px;
 }
 
 .navbar, .navbar a, .navbar span, .navbar .navbar-item, .navbar form, .navbar form button.navbar-item {
@@ -264,4 +264,18 @@ input[name=message] {
 .message_list th,td {
     text-align: left;
     padding-right: 15px;
+}
+
+/* Admin user comments font size override */
+#content-main .field-text, #content-main .field-user, #content-main .field-created_at {
+    font-size: 24px !important;
+}
+
+/* Force 24px font for log message text in Django admin user detail */
+#content-main .field-message {
+    font-size: 24px !important;
+}
+body, td, th, p, span, div, input, textarea, select, label, ul, ol, li, a, button, .btn, .navbar, .navbar-item, .comment-user, .comment-text, .comment-date, .logged-message-user, .large-header, .new-comment-label, .image-label, .file-input-placeholder, .custom-file-input-label, .log-form label, .log-form input[type="file"], .log-form button, .log-form .save, .message, .logged-message, .comment-user, .comment-text, .comment-date, .field-message, .field-text, .field-user, .field-created_at {
+    font-size: 24px !important;
+    font-family: inherit;
 }

@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
     {% if user.is_authenticated %}
-        <form method="POST" enctype="multipart/form-data" action="" class="log-form">
+        <form method="post" enctype="multipart/form-data" class="log-form">
             {% csrf_token %}
             <textarea name="message" id="id_message" rows="8" cols="60" class="large-textarea">{{ log_message_form.message.value|default_if_none:"" }}</textarea><br>
             <span class="custom-file-input-wrapper">
@@ -13,7 +13,7 @@
                 <label for="id_image" class="save btn btn-default" style="margin-right:1em; cursor:pointer;">Select Image</label>
                 <span id="file-name-label" class="custom-file-input-label file-input-placeholder">No file chosen</span>
             </span><br>
-            <button type="submit" class="save btn btn-default" style="margin-top: 10px;">Add Thoughts</button>
+            <button type="submit" class="save btn btn-default" style="margin-top: 10px;">Submit</button>
 
         </form>
     <hr style="border: 0; border-top: 6px solid #2d014d; margin: 32px 0; width: 100%;">
@@ -33,12 +33,6 @@
                         {% if user.is_authenticated and message.user == user %}
                             <form method="get" action="{% url 'edit_message' message.id %}" style="display:inline;">
                                 <button type="submit" class="save btn btn-default" style="margin-left: 16px;">Edit</button>
-                            </form>
-                            <form method="post" action="" style="display:inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="message" value="{{ message.message }}">
-                                <input type="hidden" name="image" value="{{ message.image }}">
-                                <button type="submit" name="alert_admin" value="1" class="save btn btn-default" style="margin-left: 10px; background: #e67e22;" {% if message.id in alerted_messages %}disabled{% endif %}>Ask Michelle</button>
                             </form>
                             {% if message.id in alerted_messages %}
                                 <div style="margin-left: 10px; color: #e67e22; font-weight: bold;">Michelle has been asked about this message.</div>
@@ -62,7 +56,7 @@
                                     {% if comment.image %}
                                         <img src="{{ comment.image.url }}" alt="Comment Image" style="max-width:200px; max-height:150px;">
                                     {% endif %}
-                                    <div class="comment-date">{{ comment.created_at|date:'d M Y' }}</div>
+                                    <div class="comment-date">{{ comment.created_at|date:'M d, Y' }}</div>
                                 </div>
                             {% empty %}
                                 <div style="margin-left:20px; color:#888;">No comments yet.</div>
