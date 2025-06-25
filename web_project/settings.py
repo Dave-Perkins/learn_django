@@ -150,3 +150,8 @@ ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 LOGIN_REDIRECT_URL = '/'
 # Redirect to home page after logout
 LOGOUT_REDIRECT_URL = '/'
+
+AUTHENTICATION_BACKENDS = [
+    'hello.auth_backends.SharedAccountBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]

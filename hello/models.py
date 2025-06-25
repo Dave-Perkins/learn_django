@@ -1,34 +1,42 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+
+
+class SharedAccount(models.Model):
+    name = models.CharField(max_length=150, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class CustomUser(AbstractUser):
+    shared_account = models.ForeignKey(SharedAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                       related_name='users')
+    # Add any custom fields here
+
+    pass
 
 
 class CareMessage(models.Model):
-    user = models.OneToOneField('hello.CustomUser', on_delete=models.CASCADE, related_name='care_message')
+    shared_account = models.OneToOneField('hello.SharedAccount', on_delete=models.CASCADE, related_name='care_message')
     message = models.TextField(blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"CareMessage for {self.user.username if self.user else 'Unknown'}"
+        return f"CareMessage for {self.shared_account.name if self.shared_account else 'Unknown'}"
 
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-
-class CustomUser(AbstractUser):
-    # Add any custom fields here, for example:
-    # bio = models.TextField(blank=True)
-    pass
-from django.utils import timezone
 
 class LogMessage(models.Model):
-    user = models.ForeignKey('hello.CustomUser', on_delete=models.CASCADE, related_name='log_messages', null=True, blank=True)
+    user = models.ForeignKey('hello.CustomUser', on_delete=models.CASCADE, related_name='log_messages', null=True,
+                             blank=True)
     message = models.TextField(blank=True)
     log_date = models.DateTimeField("date logged")
     image = models.ImageField(upload_to="message_images/", blank=True, null=True)
 
     def __str__(self):
-        """Returns a string representation of a message."""
         date = timezone.localtime(self.log_date)
-        return f"'{self.message}' logged on {date.strftime('%A, %d %B, %Y') }"
+        return f"'{self.message}' logged on {date.strftime('%A, %d %B, %Y')}"
 
 class Comment(models.Model):
     post = models.ForeignKey('LogMessage', on_delete=models.CASCADE, related_name='comments')

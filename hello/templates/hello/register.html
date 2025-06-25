@@ -4,7 +4,15 @@
 <h2>Register</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.non_field_errors }}
+    <label for="id_shared_account">Shared account (horse name):</label><br>
+    {{ form.shared_account }}<br>
+    {{ form.username.label_tag }}<br>
+    {{ form.username }}<br>
+    {{ form.password1.label_tag }}<br>
+    {{ form.password1 }}<br>
+    {{ form.password2.label_tag }}<br>
+    {{ form.password2 }}<br>
     <button type="submit">Register</button>
 </form>
 {% endblock %}

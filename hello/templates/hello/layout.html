@@ -14,6 +14,15 @@
 
 <div class="navbar">
     {% if user.is_authenticated %}
+        {% if user.shared_account %}
+            <span style="display:inline-block; font-size:1.2em; font-weight:bold; color:#2d014d; background:#e6e6fa; border-radius:6px; padding:8px 18px; margin-right:16px; vertical-align:middle;">
+                🐴 {{ user.shared_account.name }}
+            </span>
+        {% elif shared_account %}
+            <span style="display:inline-block; font-size:1.2em; font-weight:bold; color:#2d014d; background:#e6e6fa; border-radius:6px; padding:8px 18px; margin-right:16px; vertical-align:middle;">
+                🐴 {{ shared_account.name }}
+            </span>
+        {% endif %}
         <div class="tabs" style="display:inline-block;">
             <a href="{% url 'home' %}" class="tab{% if request.resolver_match.url_name == 'home' %} active-tab{% endif %}">Journal</a>
             {% if not user.is_staff and not user.is_superuser %}

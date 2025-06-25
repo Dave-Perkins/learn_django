@@ -11,11 +11,24 @@ class CareMessageForm(forms.ModelForm):
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from hello.models import SharedAccount
 
 class CustomUserCreationForm(UserCreationForm):
+    shared_account = forms.CharField(label="Shared account (horse name)", max_length=150, required=True)
+
     class Meta(UserCreationForm.Meta):
         model = get_user_model()
         fields = UserCreationForm.Meta.fields
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        shared_account_name = self.cleaned_data['shared_account'].strip()
+        shared_account, _ = SharedAccount.objects.get_or_create(name=shared_account_name)
+        user.shared_account = shared_account
+        if commit:
+            user.save()
+        return user
+
 from .models import Comment
 from django import forms
 from hello.models import LogMessage

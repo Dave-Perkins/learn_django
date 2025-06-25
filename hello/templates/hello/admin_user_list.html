@@ -1,10 +1,12 @@
 {% extends "hello/layout.html" %}
-{% block title %}User List{% endblock %}
+{% block title %}Shared Accounts{% endblock %}
 {% block content %}
-<h2>Registered Users</h2>
-<ul class="admin-user-list" style="font-size: 24px !important; color: #222;"> <!-- 24px font-size for user list -->
-  {% for u in users %}
-    <li><a href="{% url 'admin_user_detail' u.id %}">{{ u.username }}</a></li>
+<h2>Shared Accounts (Horses)</h2>
+<ul class="admin-user-list" style="font-size: 24px !important; color: #222;">
+  {% for account in shared_accounts %}
+    <li><a href="{% url 'admin_user_detail' account.id %}">{{ account.name }}</a></li>
+  {% empty %}
+    <li>No shared accounts found.</li>
   {% endfor %}
 </ul>
 {% endblock %}

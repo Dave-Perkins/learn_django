@@ -1,24 +1,37 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login as auth_login
+from hello.models import SharedAccount
+from .models import CareMessage
+from .forms import CareMessageForm
+import re
+from django.utils.timezone import datetime
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.views.generic import ListView
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from hello.forms import LogMessageForm, CommentForm
+from hello.models import LogMessage, Comment
+from django.db import models
+from django.core.paginator import Paginator
+from django.views.decorators.http import require_http_methods
+from django.template.response import TemplateResponse
+from django.contrib import messages
 
 @login_required
 def care_user_dropdown(request):
     # Only allow staff/superuser
     if not (request.user.is_staff or request.user.is_superuser):
         return redirect('care')
-    User = get_user_model()
-    users = User.objects.all().order_by('username')
-    return render(request, 'hello/care_user_dropdown.html', {'users': users})
+    shared_accounts = SharedAccount.objects.all().order_by('name')
+    return render(request, 'hello/care_user_dropdown.html', {'shared_accounts': shared_accounts})
 @login_required
 def care_user_dropdown(request):
     # Only allow staff/superuser
     if not (request.user.is_staff or request.user.is_superuser):
         return redirect('care')
-    User = get_user_model()
-    users = User.objects.all().order_by('username')
-    return render(request, 'hello/care_user_dropdown.html', {'users': users})
-from django.contrib.auth.decorators import login_required
-from .models import CareMessage
-from .forms import CareMessageForm
+    shared_accounts = SharedAccount.objects.all().order_by('name')
+    return render(request, 'hello/care_user_dropdown.html', {'shared_accounts': shared_accounts})
 
 
 
@@ -33,32 +46,35 @@ from django.shortcuts import get_object_or_404
 
 @login_required
 def care(request, user_id=None):
-    User = get_user_model()
-    # If admin and user_id is provided, allow editing that user's care message
-    if user_id and (request.user.is_staff or request.user.is_superuser):
-        target_user = get_object_or_404(User, pk=user_id)
-    else:
-        target_user = request.user
-    confirmation = False
     from django.db import IntegrityError
+    User = get_user_model()
+    # If admin and no user_id is provided, show list of shared accounts
+    if request.user.is_staff or request.user.is_superuser:
+        if user_id is None:
+            shared_accounts = SharedAccount.objects.all().order_by('name')
+            return render(request, 'hello/care_user_dropdown.html', {'shared_accounts': shared_accounts})
+        shared_account = get_object_or_404(SharedAccount, pk=user_id)
+    else:
+        shared_account = request.user.shared_account
+    confirmation = False
     try:
-        care_message, _ = CareMessage.objects.get_or_create(user=target_user)
+        care_message, _ = CareMessage.objects.get_or_create(shared_account=shared_account)
     except IntegrityError:
-        CareMessage.objects.filter(user=target_user).exclude(pk=CareMessage.objects.filter(user=target_user).first().pk).delete()
-        care_message = CareMessage.objects.filter(user=target_user).first()
+        CareMessage.objects.filter(shared_account=shared_account).exclude(pk=CareMessage.objects.filter(shared_account=shared_account).first().pk).delete()
+        care_message = CareMessage.objects.filter(shared_account=shared_account).first()
     if request.method == 'POST':
         new_message = request.POST.get('message', '')
         care_message.message = new_message
         care_message.save()
         confirmation = True
-        # After saving, redirect to GET to avoid form resubmission and ensure the latest value is shown
         if user_id and (request.user.is_staff or request.user.is_superuser):
             return redirect('care_with_user', user_id=user_id)
         return redirect('care')
     return render(request, 'hello/care.html', {
         'message': care_message.message,
         'confirmation': confirmation,
-        'target_user': target_user if (request.user.is_staff or request.user.is_superuser) else None,
+        'target_account': shared_account if (request.user.is_staff or request.user.is_superuser) else None,
+        'shared_account': shared_account,  # Always pass shared_account for toolbar
     })
 from django.contrib.auth.decorators import login_required
 
@@ -95,41 +111,40 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            auth_login(request, user)
+            from django.contrib.auth import login
+            login(request, user, backend='hello.auth_backends.SharedAccountBackend')
             return redirect('home')
     else:
         form = CustomUserCreationForm()
     return render(request, "hello/register.html", {"form": form})
-import re
-from django.utils.timezone import datetime
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.views.generic import ListView
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
-from hello.forms import LogMessageForm, CommentForm
-from hello.models import LogMessage, Comment
-from django.db import models
-
-
 
 # Function-based home view to handle GET and POST
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
-from django.contrib import messages
-
-from django.core.paginator import Paginator
-
-from django.views.decorators.http import require_http_methods
-from django.template.response import TemplateResponse
 
 @require_http_methods(["GET", "POST"])
 def home(request):
-    # Handle new message POST
     user = request.user
     User = get_user_model()
+    # Admin view: show list of shared accounts (horses)
+    if user.is_authenticated and (user.is_staff or user.is_superuser):
+        shared_accounts = SharedAccount.objects.all().order_by('name')
+        return TemplateResponse(request, "hello/admin_user_list.html", {"shared_accounts": shared_accounts})
+
+    # Custom login logic
+    if request.method == "POST" and not user.is_authenticated:
+        shared_account = request.POST.get("shared_account", "").strip()
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+        user = authenticate(request, username=username, password=password, shared_account=shared_account)
+        if user is not None:
+            auth_login(request, user)
+            return redirect("home")
+        else:
+            from django.contrib import messages
+            messages.error(request, "Invalid login. Please check your shared account, username, and password.")
     # Admin view: show list of users
     if user.is_authenticated and (user.is_staff or user.is_superuser):
         users = User.objects.all().order_by('username')
@@ -195,14 +210,20 @@ def home(request):
     if not user.is_authenticated:
         message_list = LogMessage.objects.none()
     else:
-        message_list = LogMessage.objects.filter(user=user).order_by('-log_date')
+        # Show all messages for the user's shared account
+        if user.shared_account:
+            message_list = LogMessage.objects.filter(user__shared_account=user.shared_account).order_by('-log_date')
+        else:
+            message_list = LogMessage.objects.filter(user=user).order_by('-log_date')
 
     filtered_comments = {}
     if user.is_authenticated:
         for message in message_list:
             filtered_comments[message.id] = list(
                 message.comments.filter(
-                    Q(user=message.user) | Q(user__is_staff=True) | Q(user__is_superuser=True)
+                    Q(user__shared_account=user.shared_account) |
+                    Q(user__is_staff=True) |
+                    Q(user__is_superuser=True)
                 )
             )
     else:
@@ -225,19 +246,24 @@ def home(request):
 def admin_user_detail(request, user_id):
     if not (request.user.is_staff or request.user.is_superuser):
         return redirect('home')
+    # user_id is now a SharedAccount id
+    shared_account = get_object_or_404(SharedAccount, pk=user_id)
+    from django.contrib.auth import get_user_model
     User = get_user_model()
-    user_obj = User.objects.get(pk=user_id)
-    messages = LogMessage.objects.filter(user=user_obj).order_by('-log_date')
+    users = User.objects.filter(shared_account=shared_account)
+    messages = LogMessage.objects.filter(user__in=users).order_by('-log_date')
     # Gather comments for each message
     comments_by_message = {}
     for message in messages:
         comments_by_message[message.id] = Comment.objects.filter(post=message).order_by('-created_at')
     return TemplateResponse(request, "hello/admin_user_detail.html", {
-        "viewed_user": user_obj,
+        "viewed_account": shared_account,
+        "users": users,
         "messages": messages,
         "comments_by_message": comments_by_message,
         "comment_form": CommentForm(),
         "user": request.user,
+        "shared_account": shared_account,  # Always pass shared_account for toolbar
     })
 
 
@@ -261,11 +287,16 @@ def add_comment(request, post_id):
             comment.image = None
         comment.save()
 
-    # Redirect logic: if admin, stay on user detail page; else, go home
+    # Redirect logic: if admin, stay on shared account detail page; else, go home
     if request.user.is_staff or request.user.is_superuser:
-        # Find the user whose post this is
-        user_id = post.user.id
-        return redirect('admin_user_detail', user_id=user_id)
+        # Find the shared account for this post
+        shared_account = None
+        if post.user and post.user.shared_account:
+            shared_account = post.user.shared_account
+        if shared_account:
+            return redirect('admin_user_detail', user_id=shared_account.id)
+        else:
+            return redirect('home')
     else:
         return redirect('home')
 
